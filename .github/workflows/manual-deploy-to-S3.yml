@@ -1,10 +1,15 @@
 # This is a basic workflow that is manually triggered
 
-name: Manual Deploy to S3 Bucket
+name: Build and Deploy
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
+  # Trigger build and deploy task when pushes to master
+  push:
+    branches: [master]
+
+  # Manual build and deploy task
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
