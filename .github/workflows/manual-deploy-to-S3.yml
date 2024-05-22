@@ -13,21 +13,33 @@ jobs:
   build-and-deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      BUCKET: github-actions-demo.amalieiev.com
+      REGION: us-east-1
+      DIST: dist
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Angular CLI
-        run: npm i -g @angular/cli
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret_access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
 
-      # Runs commands using the runners shell
+      # - name: Install Angular CLI
+      #   run: npm i -g @angular/cli
+
       - name: Install Dependencies
         run: |
           node --version
           npm i
 
-      # Build static web site
       - name: Build Angular Application
         run: npm run build
+
+      - name: Copy files to s3 bucket
+        run: aws s3 sync --delete ${{ env.DIST }} s3://${{ env.BUCKET }}
